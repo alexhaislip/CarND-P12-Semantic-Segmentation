@@ -101,7 +101,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
                                 padding='same',
                                 kernel_initializer=tf.random_normal_initializer(stddev=0.01),
                                 kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3),
-                                name='output')
+                                name='fcn')
 
     return output
 # tests.test_layers(layers)
@@ -185,8 +185,8 @@ def run():
         # TODO: Build NN using load_vgg, layers, and optimize function
         image_input, keep_prob, layer3_out, layer4_out, layer7_out = load_vgg(sess, vgg_path)
         nn_layers = layers(layer3_out, layer4_out, layer7_out, num_classes)
-        learning_rate = tf.placeholder(tf.float32)
-        correct_label = tf.placeholder(tf.float32, shape=(None, None, None, num_classes))
+        learning_rate = tf.placeholder(tf.float32, name='learning_rate')
+        correct_label = tf.placeholder(tf.float32, shape=(None, None, None, num_classes), name='correct_label')
         logits, train_op, cross_entropy_loss = optimize(nn_layers, correct_label, learning_rate, num_classes)
 
         # Initialize TF variables
