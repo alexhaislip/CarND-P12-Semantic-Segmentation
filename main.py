@@ -141,18 +141,17 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param learning_rate: TF Placeholder for learning rate
     """
     # TODO: Implement function
-
     for ep in trange(epochs, unit=' epochs'):
-        for batch_idx, (image, label) in tqdm(enumerate(get_batches_fn(batch_size)), unit=' batches'):
+        pbar = tqdm(enumerate(get_batches_fn(batch_size)), unit=' batches')
+        for batch_idx, (image, label) in pbar:
             feed_dict = {input_image: image,
                          correct_label: label,
                          keep_prob: 0.50,
-                         learning_rate: 0.0001,
+                         learning_rate: 1e-5,
                          }
             _, loss = sess.run([train_op, cross_entropy_loss], feed_dict)
-            if batch_idx % 20 == 0:
-                print('Epoch:',ep,'Batch:',batch_idx,'Loss =',loss)
-        print('Epoch:',ep,'Loss =',loss)
+            if batch_idx % 10 == 0:
+                pbar.set_description('Epoch: %d, Batch: %d, Loss = %.3f' % (ep+1, batch_idx, loss))
 
 # tests.test_train_nn(train_nn)
 
