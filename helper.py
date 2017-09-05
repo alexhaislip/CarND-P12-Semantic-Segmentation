@@ -93,7 +93,8 @@ def gen_batch_function(data_folder, image_shape):
 
                 if np.random.rand() > 0.5:
                     image = np.fliplr(image)
-                
+                    gt_image = np.fliplr(gt_image)
+                    
                 images.append(image)
                 gt_images.append(gt_image)
 
