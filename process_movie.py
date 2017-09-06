@@ -1,9 +1,14 @@
 import os
 import sys
-from main import *
 from moviepy.editor import VideoFileClip
 import collections as cl
 import scipy
+
+if len(sys.argv) < 3:
+    print('Usage: python process_movie.py <input_file.mp4> <output_file.mp4>')
+    sys.exit(1)
+
+from main import *
 
 num_classes = 2
 epochs = 10
@@ -11,18 +16,25 @@ batch_size = 8
 data_dir = './data'
 runs_dir = './runs'
 scale = 0.75
-tests.test_for_kitti_dataset(data_dir)
+# tests.test_for_kitti_dataset(data_dir)
 
 # Download pretrained vgg model
 helper.maybe_download_pretrained_vgg(data_dir)
 vgg_path = os.path.join(data_dir, 'vgg')
 
-# input_file = sys.argv[1]
-input_file = '/Users/tantony/Movies/Dashcam/2017_0820_153800_447_FancyCars.MP4'
+input_file = sys.argv[1]
+output_file = sys.argv[2]
+
+clip = VideoFileClip(input_file).subclip(0,10)
+# input_file = '/Users/tantony/Movies/Dashcam/2017_0820_153800_447_FancyCars.MP4'
 weights_path = './data/ckpt/model_40epoch_0050_final.ckpt'
-output_file = './output.mp4'
+# output_file = './output.mp4'
 
 image_shape = tuple(int(w*scale) for w in clip.size)
+
+# print(input_file)
+# print(output_file)
+# sys.exit(0)
 
 tf.reset_default_graph()
 with tf.Session() as sess:
@@ -34,8 +46,6 @@ with tf.Session() as sess:
 
     saver = tf.train.Saver()
     saver.restore(sess, weights_path)
-
-    clip = VideoFileClip(input_file).subclip(0,10)
 
     history = cl.deque(maxlen=10)
     def get_mask(frame):
